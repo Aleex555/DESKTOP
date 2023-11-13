@@ -4,10 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:web_socket_channel/io.dart';
 
-// Access appData globaly with:
-// AppData appData = Provider.of<AppData>(context);
-// AppData appData = Provider.of<AppData>(context, listen: false)
-
 enum ConnectionStatus {
   disconnected,
   disconnecting,
@@ -43,19 +39,25 @@ class AppData with ChangeNotifier {
         notifyListeners();
       }
     } catch (e) {
-      // ignore: avoid_print
       print("Can't get local IP address : $e");
     }
   }
 
   void connectToServer() async {
-    connectionStatus = ConnectionStatus.connecting;
     notifyListeners();
 
     // Simulate connection delay
     await Future.delayed(const Duration(seconds: 1));
 
     _socketClient = IOWebSocketChannel.connect("ws://$ip:$port");
+
+    // Enviar el tipo de cliente al servidor
+    final message1 = {
+      'type': 'cliente_flutter',
+      'value': 'Flutter',
+    };
+    _socketClient!.sink.add(jsonEncode(message1));
+
     _socketClient!.stream.listen(
       (message) {
         final data = jsonDecode(message);
@@ -74,7 +76,6 @@ class AppData with ChangeNotifier {
             break;
           case 'connected':
             clients.add(data['id']);
-            
             break;
           case 'disconnected':
             clients.remove(data['id']);
@@ -108,14 +109,12 @@ class AppData with ChangeNotifier {
     _socketClient!.sink.close();
   }
 
-
   refreshClientsList() {
     final message = {
       'type': 'list',
     };
     _socketClient!.sink.add(jsonEncode(message));
   }
-
 
   broadcastMessage(String msg) {
     final message = {
@@ -124,20 +123,6 @@ class AppData with ChangeNotifier {
     };
     _socketClient!.sink.add(jsonEncode(message));
   }
-
-  /*
-  * Save file example:
-
-    final myData = {
-      'type': 'list',
-      'clients': clients,
-      'selectedClient': selectedClient,
-      // i més camps que vulguis guardar
-    };
-    
-    await saveFile('myData.json', myData);
-
-  */
 
   Future<void> saveFile(String fileName, Map<String, dynamic> data) async {
     file_saving = true;
@@ -149,20 +134,12 @@ class AppData with ChangeNotifier {
       final jsonData = jsonEncode(data);
       await file.writeAsString(jsonData);
     } catch (e) {
-      // ignore: avoid_print
       print("Error saving file: $e");
     } finally {
       file_saving = false;
       notifyListeners();
     }
   }
-
-  /*
-  * Read file example:
-  
-    final data = await readFile('myData.json');
-
-  */
 
   Future<Map<String, dynamic>?> readFile(String fileName) async {
     file_loading = true;
@@ -176,12 +153,10 @@ class AppData with ChangeNotifier {
         final data = jsonDecode(jsonData) as Map<String, dynamic>;
         return data;
       } else {
-        // ignore: avoid_print
         print("File does not exist!");
         return null;
       }
     } catch (e) {
-      // ignore: avoid_print
       print("Error reading file: $e");
       return null;
     } finally {

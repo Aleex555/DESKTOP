@@ -1,9 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'layout_connected.dart';
-import 'layout_connecting.dart';
 import 'layout_disconnected.dart';
-import 'layout_disconnecting.dart';
 import 'app_data.dart';
 
 // Main application widget
@@ -22,10 +20,6 @@ class AppState extends State<App> {
     AppData appData = Provider.of<AppData>(context);
 
     switch (appData.connectionStatus) {
-      case ConnectionStatus.disconnecting:
-        return const LayoutDisconnecting();
-      case ConnectionStatus.connecting:
-        return const LayoutConnecting();
       case ConnectionStatus.connected:
         return const LayoutConnected();
       default:

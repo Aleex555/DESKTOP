@@ -33,12 +33,12 @@ class _LayoutConnectedState extends State<LayoutConnected> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Container(
-                    
                     child: CupertinoTextField(
                       controller: _messageController,
                       focusNode: _messageFocusNode,
                       placeholder: "Escribe tu mensaje ...",
-                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       maxLines: 1,
                       decoration: BoxDecoration(
                         color: const Color.fromRGBO(240, 240, 240, 1),
@@ -67,6 +67,11 @@ class _LayoutConnectedState extends State<LayoutConnected> {
             height: 32,
             child: CupertinoButton.filled(
               onPressed: () {
+                final message = {
+                  'id': appData.mySocketId,
+                  'mensaje': _messageController.text
+                };
+                appData.saveFile('mensajes.json', message);
                 appData.broadcastMessage(_messageController.text);
                 _messageController.text = "";
                 FocusScope.of(context).requestFocus(_messageFocusNode);
