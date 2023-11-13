@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'app_data.dart';
 import 'widget_selectable_list.dart';
+import 'package:intl/intl.dart';
 
 class LayoutConnected extends StatefulWidget {
   const LayoutConnected({Key? key}) : super(key: key);
@@ -13,6 +14,7 @@ class LayoutConnected extends StatefulWidget {
 class _LayoutConnectedState extends State<LayoutConnected> {
   final _messageController = TextEditingController();
   final FocusNode _messageFocusNode = FocusNode();
+  DateTime dateTime = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
@@ -66,12 +68,12 @@ class _LayoutConnectedState extends State<LayoutConnected> {
             width: 140,
             height: 32,
             child: CupertinoButton.filled(
-              onPressed: () {
+              onPressed: () async {
                 final message = {
-                  'id': appData.mySocketId,
+                  'fecha': DateFormat('HH:mm dd-MM-yyyy').format(dateTime),
                   'mensaje': _messageController.text
                 };
-                appData.saveFile('mensajes.json', message);
+
                 appData.broadcastMessage(_messageController.text);
                 _messageController.text = "";
                 FocusScope.of(context).requestFocus(_messageFocusNode);

@@ -51,12 +51,11 @@ class AppData with ChangeNotifier {
 
     _socketClient = IOWebSocketChannel.connect("ws://$ip:$port");
 
-    // Enviar el tipo de cliente al servidor
-    final message1 = {
+    final message = {
       'type': 'cliente_flutter',
       'value': 'Flutter',
     };
-    _socketClient!.sink.add(jsonEncode(message1));
+    _socketClient!.sink.add(jsonEncode(message));
 
     _socketClient!.stream.listen(
       (message) {
