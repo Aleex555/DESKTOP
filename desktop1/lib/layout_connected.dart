@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'app_data.dart';
-import 'widget_selectable_list.dart';
 import 'package:intl/intl.dart';
 
 class LayoutConnected extends StatefulWidget {
@@ -49,16 +48,6 @@ class _LayoutConnectedState extends State<LayoutConnected> {
                         ),
                       ),
                     ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Container(
-                  color: const Color.fromRGBO(240, 240, 240, 1),
-                  width: 142,
-                  child: MediaQuery.removePadding(
-                    context: context,
-                    removeTop: true,
-                    child: WidgetSelectableList(),
                   ),
                 ),
                 const SizedBox(width: 8),
