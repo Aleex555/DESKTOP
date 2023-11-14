@@ -6,8 +6,7 @@ import 'package:web_socket_channel/io.dart';
 
 enum ConnectionStatus {
   disconnected,
-  disconnecting,
-  connecting,
+  registro,
   connected,
 }
 
@@ -20,6 +19,7 @@ class AppData with ChangeNotifier {
 
   String? mySocketId;
   List<String> clients = [];
+  bool regitrado = false;
 
   bool file_saving = false;
   bool file_loading = false;
@@ -55,11 +55,9 @@ class AppData with ChangeNotifier {
       (message) {
         final data = jsonDecode(message);
 
-        if (connectionStatus != ConnectionStatus.connected) {
-          connectionStatus = ConnectionStatus.connected;
-        }
-
         switch (data['type']) {
+          case 'ok':
+            connectionStatus = ConnectionStatus.connected;
           case 'list':
             clients = (data['list'] as List).map((e) => e.toString()).toList();
             clients.remove(mySocketId);
@@ -93,7 +91,6 @@ class AppData with ChangeNotifier {
   }
 
   disconnectFromServer() async {
-    connectionStatus = ConnectionStatus.disconnecting;
     notifyListeners();
 
     // Simulate connection delay
@@ -114,6 +111,15 @@ class AppData with ChangeNotifier {
       'type': 'broadcast',
       'from': 'Flutter',
       'value': msg,
+    };
+    _socketClient!.sink.add(jsonEncode(message));
+  }
+
+  registro(String usu, String contra) {
+    final message = {
+      'type': 'registro',
+      'user': usu,
+      'password': contra,
     };
     _socketClient!.sink.add(jsonEncode(message));
   }

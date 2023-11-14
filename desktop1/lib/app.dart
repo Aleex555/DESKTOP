@@ -1,3 +1,4 @@
+import 'package:desktop/layout_registro.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'layout_connected.dart';
@@ -22,6 +23,8 @@ class AppState extends State<App> {
     switch (appData.connectionStatus) {
       case ConnectionStatus.connected:
         return const LayoutConnected();
+      case ConnectionStatus.registro:
+        return const LayoutRegistro();
       default:
         return const LayoutDisconnected();
     }

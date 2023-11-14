@@ -15,9 +15,12 @@ class _LayoutConnectedState extends State<LayoutConnected> {
   final FocusNode _messageFocusNode = FocusNode();
   DateTime dateTime = DateTime.now();
 
+  bool showMessages = false;
+  List<Map<String, dynamic>> messages = [];
+
   @override
   Widget build(BuildContext context) {
-    AppData appData = Provider.of<AppData>(context);
+    AppData appData = Provider.of<AppData>(context, listen: false);
 
     return Scaffold(
       appBar: AppBar(
@@ -55,46 +58,200 @@ class _LayoutConnectedState extends State<LayoutConnected> {
             ),
           ),
           const SizedBox(height: 16),
-          SizedBox(
-            width: 140,
-            height: 32,
-            child: ElevatedButton(
-              onPressed: () async {
-                final message2 = {
-                  'fecha': DateFormat('HH:mm dd-MM-yyyy').format(dateTime),
-                  'mensaje': _messageController.text
-                };
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: 140,
+                height: 32,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    final message2 = {
+                      'fecha': DateFormat('HH:mm dd-MM-yyyy').format(dateTime),
+                      'mensaje': _messageController.text
+                    };
 
-                appData.broadcastMessage(_messageController.text);
-                _messageController.text = "";
-                FocusScope.of(context).requestFocus(_messageFocusNode);
-              },
-              child: const Text(
-                "Enviar",
-                style: TextStyle(fontSize: 14),
+                    Map<String, dynamic>? data =
+                        await appData.readFile("mensajes.json");
+                    data ??= {};
+
+                    // Verificar si el mensaje ya existe en el mapa
+                    bool messageExists = data.values.any((value) =>
+                        value is Map<String, dynamic> &&
+                        value.containsKey('mensaje') &&
+                        value['mensaje'] == _messageController.text);
+
+                    if (!messageExists) {
+                      int nextIndex = 1;
+                      while (data.containsKey('nuevoMensaje$nextIndex')) {
+                        nextIndex++;
+                      }
+                      data['nuevoMensaje$nextIndex'] = message2;
+                      await appData.saveFile("mensajes.json", data);
+                    } else {
+                      print("Mensaje NO guardado por que ya existe");
+                    }
+
+                    appData.broadcastMessage(_messageController.text);
+                    _messageController.text = "";
+                    FocusScope.of(context).requestFocus(_messageFocusNode);
+                  },
+                  child: const Text(
+                    "Enviar",
+                    style: TextStyle(fontSize: 14),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              SizedBox(
+                width: 140,
+                height: 32,
+                child: ElevatedButton(
+                  onPressed: () {
+                    appData.disconnectFromServer();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                  ),
+                  child: const Text(
+                    "Disconnect",
+                    style: TextStyle(fontSize: 14),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              SizedBox(
+                width: 140,
+                height: 32,
+                child: ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      showMessages = !showMessages;
+                      if (showMessages) {
+                        // Mostrar la lista de mensajes
+                        loadMessages();
+                      }
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                  ),
+                  child: const Text(
+                    "Mostrar Mensajes",
+                    style: TextStyle(fontSize: 14),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              SizedBox(
+                width: 140,
+                height: 32,
+                child: ElevatedButton(
+                  onPressed: () {
+                    _showConfirmationDialog(() {
+                      setState(() {
+                        // Mostrar la lista de mensajes
+                        loadMessages();
+                      });
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                  ),
+                  child: const Text(
+                    "Refresh",
+                    style: TextStyle(fontSize: 14),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          if (showMessages)
+            Expanded(
+              child: ListView.builder(
+                itemCount: messages.length,
+                itemBuilder: (context, index) {
+                  return GestureDetector(
+                    onTap: () {
+                      _showConfirmationDialog(() {
+                        appData.broadcastMessage(messages[index]['mensaje']);
+                        _messageController.text = "";
+                        FocusScope.of(context).requestFocus(_messageFocusNode);
+                        print("Elemento clicado: ");
+                      });
+                    },
+                    child: ListTile(
+                      title: Text(messages[index]['mensaje']),
+                      subtitle: Text(messages[index]['fecha']),
+                    ),
+                  );
+                },
               ),
             ),
-          ),
-          const SizedBox(height: 16),
-          SizedBox(
-            width: 140,
-            height: 32,
-            child: ElevatedButton(
-              onPressed: () {
-                appData.disconnectFromServer();
-              },
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.zero,
-              ),
-              child: const Text(
-                "Disconnect",
-                style: TextStyle(fontSize: 14),
-              ),
-            ),
-          ),
           const SizedBox(height: 8),
         ],
       ),
+    );
+  }
+
+  void loadMessages() async {
+    AppData appData = Provider.of<AppData>(context, listen: false);
+
+    Map<String, dynamic>? data = await appData.readFile("mensajes.json");
+    data ??= {};
+
+    List<Map<String, dynamic>> loadedMessages = [];
+    data.forEach((key, value) {
+      if (value is Map<String, dynamic> &&
+          value.containsKey('mensaje') &&
+          value.containsKey('fecha')) {
+        loadedMessages.add(value);
+      }
+    });
+
+    // Ordenar los mensajes por fecha
+    loadedMessages.sort((a, b) {
+      DateTime dateA = DateFormat('HH:mm dd-MM-yyyy').parse(a['fecha']);
+      DateTime dateB = DateFormat('HH:mm dd-MM-yyyy').parse(b['fecha']);
+      return dateA.compareTo(dateB);
+    });
+
+    setState(() {
+      messages = loadedMessages;
+    });
+  }
+
+  Future<void> _showConfirmationDialog(Function onConfirm) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirmación'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('¿Estás seguro de que quieres realizar esta acción?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                onConfirm();
+              },
+              child: Text('Aceptar'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

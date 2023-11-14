@@ -61,6 +61,7 @@ class _LayoutDisconnectedState extends State<LayoutDisconnected> {
                     onPressed: () {
                       appData.ip = _ipController.text;
                       appData.connectToServer();
+                      appData.connectionStatus = ConnectionStatus.registro;
                     },
                     child: const Text(
                       "Connect",
