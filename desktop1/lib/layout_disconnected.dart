@@ -1,9 +1,9 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'app_data.dart';
 
 class LayoutDisconnected extends StatefulWidget {
-  const LayoutDisconnected({super.key});
+  const LayoutDisconnected({Key? key}) : super(key: key);
 
   @override
   State<LayoutDisconnected> createState() => _LayoutDisconnectedState();
@@ -28,7 +28,7 @@ class _LayoutDisconnectedState extends State<LayoutDisconnected> {
         ),
         Container(
           constraints: const BoxConstraints(maxWidth: 200),
-          child: CupertinoTextField(controller: controller),
+          child: TextField(controller: controller),
         ),
       ],
     );
@@ -40,37 +40,41 @@ class _LayoutDisconnectedState extends State<LayoutDisconnected> {
 
     _ipController.text = appData.ip;
 
-    return CupertinoPageScaffold(
-      navigationBar: const CupertinoNavigationBar(
-        middle: Text("Display Crazy"),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Display Crazy"),
       ),
-      child: ListView(
+      body: Padding(
         padding: const EdgeInsets.all(20),
-        children: [
-          const SizedBox(height: 50),
-          _buildTextFormField("Server IP", appData.ip, _ipController),
-          const SizedBox(height: 20),
-          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            SizedBox(
-              width: 96,
-              height: 32,
-              child: CupertinoButton.filled(
-                onPressed: () {
-                  appData.ip = _ipController.text;
-                  appData.connectToServer();
-                },
-                padding: EdgeInsets.zero,
-                child: const Text(
-                  "Connect",
-                  style: TextStyle(
-                    fontSize: 14,
+        child: ListView(
+          children: [
+            const SizedBox(height: 50),
+            _buildTextFormField("Server IP", appData.ip, _ipController),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 96,
+                  height: 32,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      appData.ip = _ipController.text;
+                      appData.connectToServer();
+                    },
+                    child: const Text(
+                      "Connect",
+                      style: TextStyle(
+                        fontSize: 14,
+                      ),
+                    ),
                   ),
                 ),
-              ),
+              ],
             ),
-          ]),
-          const SizedBox(height: 20),
-        ],
+            const SizedBox(height: 20),
+          ],
+        ),
       ),
     );
   }

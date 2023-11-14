@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'app_data.dart';
 import 'widget_selectable_list.dart';
@@ -20,11 +20,11 @@ class _LayoutConnectedState extends State<LayoutConnected> {
   Widget build(BuildContext context) {
     AppData appData = Provider.of<AppData>(context);
 
-    return CupertinoPageScaffold(
-      navigationBar: const CupertinoNavigationBar(
-        middle: Text("Display Crazy"),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Display Crazy"),
       ),
-      child: Column(
+      body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const SizedBox(height: 52),
@@ -35,16 +35,18 @@ class _LayoutConnectedState extends State<LayoutConnected> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Container(
-                    child: CupertinoTextField(
+                    child: TextField(
                       controller: _messageController,
                       focusNode: _messageFocusNode,
-                      placeholder: "Escribe tu mensaje ...",
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      maxLines: 1,
-                      decoration: BoxDecoration(
-                        color: const Color.fromRGBO(240, 240, 240, 1),
-                        borderRadius: BorderRadius.circular(8),
+                      decoration: InputDecoration(
+                        hintText: "Escribe tu mensaje ...",
+                        contentPadding:
+                            EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        filled: true,
+                        fillColor: const Color.fromRGBO(240, 240, 240, 1),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
                     ),
                   ),
@@ -67,9 +69,9 @@ class _LayoutConnectedState extends State<LayoutConnected> {
           SizedBox(
             width: 140,
             height: 32,
-            child: CupertinoButton.filled(
+            child: ElevatedButton(
               onPressed: () async {
-                final message = {
+                final message2 = {
                   'fecha': DateFormat('HH:mm dd-MM-yyyy').format(dateTime),
                   'mensaje': _messageController.text
                 };
@@ -78,7 +80,6 @@ class _LayoutConnectedState extends State<LayoutConnected> {
                 _messageController.text = "";
                 FocusScope.of(context).requestFocus(_messageFocusNode);
               },
-              padding: EdgeInsets.zero,
               child: const Text(
                 "Enviar",
                 style: TextStyle(fontSize: 14),
@@ -89,11 +90,13 @@ class _LayoutConnectedState extends State<LayoutConnected> {
           SizedBox(
             width: 140,
             height: 32,
-            child: CupertinoButton(
+            child: ElevatedButton(
               onPressed: () {
                 appData.disconnectFromServer();
               },
-              padding: EdgeInsets.zero,
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.zero,
+              ),
               child: const Text(
                 "Disconnect",
                 style: TextStyle(fontSize: 14),

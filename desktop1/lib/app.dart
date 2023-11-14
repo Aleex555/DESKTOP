@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'layout_connected.dart';
 import 'layout_disconnected.dart';
@@ -29,11 +29,15 @@ class AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) {
-    // Farem servir la base 'Cupertino'
-    return CupertinoApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: const CupertinoThemeData(brightness: Brightness.light),
-      home: _setLayout(context),
+      theme: ThemeData(
+        brightness: Brightness.light,
+        // Puedes agregar más configuraciones de tema según sea necesario
+      ),
+      home: Scaffold(
+        body: _setLayout(context),
+      ),
     );
   }
 }

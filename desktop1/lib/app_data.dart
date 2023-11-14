@@ -51,12 +51,6 @@ class AppData with ChangeNotifier {
 
     _socketClient = IOWebSocketChannel.connect("ws://$ip:$port");
 
-    final message = {
-      'type': 'cliente_flutter',
-      'value': 'Flutter',
-    };
-    _socketClient!.sink.add(jsonEncode(message));
-
     _socketClient!.stream.listen(
       (message) {
         final data = jsonDecode(message);
@@ -118,6 +112,7 @@ class AppData with ChangeNotifier {
   broadcastMessage(String msg) {
     final message = {
       'type': 'broadcast',
+      'from': 'Flutter',
       'value': msg,
     };
     _socketClient!.sink.add(jsonEncode(message));
