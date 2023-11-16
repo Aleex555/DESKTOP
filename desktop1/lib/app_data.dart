@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:web_socket_channel/io.dart';
 
@@ -163,5 +164,27 @@ class AppData with ChangeNotifier {
       file_loading = false;
       notifyListeners();
     }
+  }
+
+  pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile == null) {
+      throw Exception('No se seleccionó ninguna imagen.');
+    }
+
+    // Convierte la imagen a bytes
+    List<int> bytes = await pickedFile.readAsBytes();
+
+    // Codifica los bytes en Base64
+    String base64String = base64Encode(bytes);
+
+    final message1 = {
+      'type': 'image',
+      'value': base64String,
+      'name': pickedFile.path.split('/').last,
+    };
+    _socketClient!.sink.add(jsonEncode(message1));
   }
 }

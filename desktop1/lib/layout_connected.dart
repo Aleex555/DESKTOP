@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'app_data.dart';
@@ -24,7 +26,8 @@ class _LayoutConnectedState extends State<LayoutConnected> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Display Crazy"),
+        title: Text('Display Crazy'),
+        backgroundColor: Colors.blue,
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -75,7 +78,6 @@ class _LayoutConnectedState extends State<LayoutConnected> {
                         await appData.readFile("mensajes.json");
                     data ??= {};
 
-                    // Verificar si el mensaje ya existe en el mapa
                     bool messageExists = data.values.any((value) =>
                         value is Map<String, dynamic> &&
                         value.containsKey('mensaje') &&
@@ -89,7 +91,7 @@ class _LayoutConnectedState extends State<LayoutConnected> {
                       data['nuevoMensaje$nextIndex'] = message2;
                       await appData.saveFile("mensajes.json", data);
                     } else {
-                      print("Mensaje NO guardado por que ya existe");
+                      print("Mensaje NO guardado porque ya existe");
                     }
 
                     appData.broadcastMessage(_messageController.text);
@@ -128,7 +130,6 @@ class _LayoutConnectedState extends State<LayoutConnected> {
                     setState(() {
                       showMessages = !showMessages;
                       if (showMessages) {
-                        // Mostrar la lista de mensajes
                         loadMessages();
                       }
                     });
@@ -150,7 +151,6 @@ class _LayoutConnectedState extends State<LayoutConnected> {
                   onPressed: () {
                     _showConfirmationDialog(() {
                       setState(() {
-                        // Mostrar la lista de mensajes
                         loadMessages();
                       });
                     });
@@ -164,6 +164,49 @@ class _LayoutConnectedState extends State<LayoutConnected> {
                   ),
                 ),
               ),
+              const SizedBox(width: 8),
+              // Botón Imágenes con Menú Emergente
+              SizedBox(
+                width: 140,
+                height: 32,
+                child: ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                  ),
+                  child: PopupMenuButton<String>(
+                    onSelected: (value) {
+                      if (value == 'seleccionar_galeria') {
+                        appData.pickImage();
+                      } else if (value == 'tomar_foto') {
+                        // Lógica para tomar una foto
+                        // ...
+                      }
+                    },
+                    itemBuilder: (BuildContext context) => [
+                      PopupMenuItem<String>(
+                        value: 'seleccionar_galeria',
+                        child: ListTile(
+                          leading: Icon(Icons.photo),
+                          title: Text('Seleccionar de la galería'),
+                        ),
+                      ),
+                      PopupMenuItem<String>(
+                        value: 'tomar_foto',
+                        child: ListTile(
+                          leading: Icon(Icons.camera),
+                          title: Text('Tomar foto'),
+                        ),
+                      ),
+                    ],
+                    child: const Text(
+                      "Imágenes",
+                      style: TextStyle(fontSize: 14),
+                    ),
+                  ),
+                ),
+              ),
+              // ... (Otros botones)
             ],
           ),
           if (showMessages)
@@ -209,7 +252,6 @@ class _LayoutConnectedState extends State<LayoutConnected> {
       }
     });
 
-    // Ordenar los mensajes por fecha
     loadedMessages.sort((a, b) {
       DateTime dateA = DateFormat('HH:mm dd-MM-yyyy').parse(a['fecha']);
       DateTime dateB = DateFormat('HH:mm dd-MM-yyyy').parse(b['fecha']);

@@ -36,7 +36,6 @@ class AppState extends State<App> {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         brightness: Brightness.light,
-        // Puedes agregar más configuraciones de tema según sea necesario
       ),
       home: Scaffold(
         body: _setLayout(context),

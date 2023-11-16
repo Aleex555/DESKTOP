@@ -43,6 +43,7 @@ class _LayoutDisconnectedState extends State<LayoutDisconnected> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Display Crazy"),
+        backgroundColor: Colors.blue,
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
@@ -55,18 +56,22 @@ class _LayoutDisconnectedState extends State<LayoutDisconnected> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(
-                  width: 96,
-                  height: 32,
+                  width: 140,
+                  height: 40,
                   child: ElevatedButton(
                     onPressed: () {
                       appData.ip = _ipController.text;
                       appData.connectToServer();
                       appData.connectionStatus = ConnectionStatus.registro;
                     },
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.blue,
+                    ),
                     child: const Text(
                       "Connect",
                       style: TextStyle(
-                        fontSize: 14,
+                        color: Colors.white,
+                        fontSize: 16,
                       ),
                     ),
                   ),
