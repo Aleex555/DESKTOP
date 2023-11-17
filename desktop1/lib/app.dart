@@ -1,3 +1,4 @@
+import 'package:desktop/layout_imagenes.dart';
 import 'package:desktop/layout_registro.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -25,6 +26,8 @@ class AppState extends State<App> {
         return const LayoutConnected();
       case ConnectionStatus.registro:
         return const LayoutRegistro();
+      case ConnectionStatus.imagenes:
+        return const ImageLayout();
       default:
         return const LayoutDisconnected();
     }

@@ -1,5 +1,3 @@
-import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'app_data.dart';
@@ -179,23 +177,22 @@ class _LayoutConnectedState extends State<LayoutConnected> {
                       if (value == 'seleccionar_galeria') {
                         appData.pickImage();
                       } else if (value == 'tomar_foto') {
-                        // Lógica para tomar una foto
-                        // ...
+                        appData.galeria_img();
                       }
                     },
                     itemBuilder: (BuildContext context) => [
-                      PopupMenuItem<String>(
+                      const PopupMenuItem<String>(
                         value: 'seleccionar_galeria',
                         child: ListTile(
                           leading: Icon(Icons.photo),
                           title: Text('Seleccionar de la galería'),
                         ),
                       ),
-                      PopupMenuItem<String>(
+                      const PopupMenuItem<String>(
                         value: 'tomar_foto',
                         child: ListTile(
                           leading: Icon(Icons.camera),
-                          title: Text('Tomar foto'),
+                          title: Text('Galeria'),
                         ),
                       ),
                     ],

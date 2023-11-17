@@ -5,11 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:web_socket_channel/io.dart';
 
-enum ConnectionStatus {
-  disconnected,
-  registro,
-  connected,
-}
+enum ConnectionStatus { disconnected, registro, connected, imagenes }
 
 class AppData with ChangeNotifier {
   String ip = "localhost";
@@ -59,6 +55,8 @@ class AppData with ChangeNotifier {
         switch (data['type']) {
           case 'ok':
             connectionStatus = ConnectionStatus.connected;
+          case 'img':
+            connectionStatus = ConnectionStatus.imagenes;
           case 'list':
             clients = (data['list'] as List).map((e) => e.toString()).toList();
             clients.remove(mySocketId);
@@ -125,6 +123,20 @@ class AppData with ChangeNotifier {
     _socketClient!.sink.add(jsonEncode(message));
   }
 
+  galeria_img() {
+    final message = {
+      'type': 'galeria',
+    };
+    _socketClient!.sink.add(jsonEncode(message));
+  }
+
+  volver_connected() {
+    final message = {
+      'type': 'registro',
+    };
+    _socketClient!.sink.add(jsonEncode(message));
+  }
+
   Future<void> saveFile(String fileName, Map<String, dynamic> data) async {
     file_saving = true;
     notifyListeners();
@@ -179,11 +191,25 @@ class AppData with ChangeNotifier {
 
     // Codifica los bytes en Base64
     String base64String = base64Encode(bytes);
+    final String destinationImagePath =
+        './galeria_img/' + pickedFile.path.split('/').last;
+
+    final File destinationFile = File(destinationImagePath);
+    await destinationFile.writeAsBytes(bytes);
 
     final message1 = {
       'type': 'image',
       'value': base64String,
       'name': pickedFile.path.split('/').last,
+    };
+    _socketClient!.sink.add(jsonEncode(message1));
+  }
+
+  reenviar_img(String base64string) {
+    final message1 = {
+      'type': 'image',
+      'value': base64string,
+      'name': "",
     };
     _socketClient!.sink.add(jsonEncode(message1));
   }
