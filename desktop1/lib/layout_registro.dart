@@ -15,61 +15,73 @@ class _LayoutRegistroState extends State<LayoutRegistro> {
 
   @override
   Widget build(BuildContext context) {
-    AppData appData = Provider.of<AppData>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text("Registro"),
         backgroundColor: Colors.blue,
         centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: ListView(
-          children: [
-            const SizedBox(height: 50),
-            _buildTextFormField("Usuario", _usuarioController),
-            const SizedBox(height: 20),
-            _buildTextFormField("Contraseña", _contrasenaController,
-                obscureText: true),
-            const SizedBox(height: 32),
-            SizedBox(
-              width: 140,
-              height: 40,
-              child: ElevatedButton(
-                onPressed: () {
-                  String usuario = _usuarioController.text;
-                  String contrasena = _contrasenaController.text;
-                  appData.registro(usuario, contrasena);
-                  print('Usuario: $usuario');
-                  print('Contraseña: $contrasena');
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: Colors.blue,
-                ),
-                child: const Text(
-                  "Enviar",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
+      body: Center(
+        child: Container(
+          width: 300,
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                const SizedBox(height: 50),
+                _buildTextFormField("Usuario", _usuarioController,
+                    onEditingComplete: _onEditingComplete),
+                const SizedBox(height: 20),
+                _buildTextFormField("Contraseña", _contrasenaController,
+                    obscureText: true, onEditingComplete: _onEditingComplete),
+                const SizedBox(height: 32),
+                SizedBox(
+                  width: 140,
+                  height: 40,
+                  child: ElevatedButton(
+                    onPressed: _onEnviarPressed,
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.blue,
+                    ),
+                    child: const Text(
+                      "Enviar",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                      ),
+                    ),
                   ),
                 ),
-              ),
+                const SizedBox(height: 20),
+              ],
             ),
-            const SizedBox(height: 20),
-          ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildTextFormField(String label, TextEditingController controller,
-      {bool obscureText = false}) {
+      {bool obscureText = false, VoidCallback? onEditingComplete}) {
     return TextField(
       controller: controller,
       obscureText: obscureText,
       decoration: InputDecoration(
         labelText: label,
       ),
+      onEditingComplete: onEditingComplete,
     );
+  }
+
+  void _onEditingComplete() {
+    _onEnviarPressed();
+  }
+
+  void _onEnviarPressed() {
+    String usuario = _usuarioController.text;
+    String contrasena = _contrasenaController.text;
+    AppData appData = Provider.of<AppData>(context, listen: false);
+    appData.registro(usuario, contrasena);
   }
 }

@@ -43,7 +43,6 @@ class AppData with ChangeNotifier {
   void connectToServer() async {
     notifyListeners();
 
-    // Simulate connection delay
     await Future.delayed(const Duration(seconds: 1));
 
     _socketClient = IOWebSocketChannel.connect("ws://$ip:$port");

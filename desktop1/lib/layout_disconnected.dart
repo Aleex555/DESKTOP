@@ -12,6 +12,19 @@ class LayoutDisconnected extends StatefulWidget {
 class _LayoutDisconnectedState extends State<LayoutDisconnected> {
   final _ipController = TextEditingController();
 
+  @override
+  void initState() {
+    super.initState();
+
+    // Agregar un listener para el controlador de texto
+    _ipController.addListener(_onTextFieldChanged);
+  }
+
+  // Método que se llama cada vez que el texto en el TextField cambia
+  void _onTextFieldChanged() {
+    // Puedes agregar lógica adicional aquí si es necesario
+  }
+
   Widget _buildTextFormField(
     String label,
     String defaultValue,
@@ -28,7 +41,12 @@ class _LayoutDisconnectedState extends State<LayoutDisconnected> {
         ),
         Container(
           constraints: const BoxConstraints(maxWidth: 200),
-          child: TextField(controller: controller),
+          child: TextField(
+            controller: controller,
+            onEditingComplete: () {
+              _onConnectButtonPressed();
+            },
+          ),
         ),
       ],
     );
@@ -60,11 +78,7 @@ class _LayoutDisconnectedState extends State<LayoutDisconnected> {
                   width: 140,
                   height: 40,
                   child: ElevatedButton(
-                    onPressed: () {
-                      appData.ip = _ipController.text;
-                      appData.connectToServer();
-                      appData.connectionStatus = ConnectionStatus.registro;
-                    },
+                    onPressed: _onConnectButtonPressed,
                     style: ElevatedButton.styleFrom(
                       primary: Colors.blue,
                     ),
@@ -84,5 +98,19 @@ class _LayoutDisconnectedState extends State<LayoutDisconnected> {
         ),
       ),
     );
+  }
+
+  void _onConnectButtonPressed() {
+    AppData appData = Provider.of<AppData>(context, listen: false);
+    appData.ip = _ipController.text;
+    appData.connectToServer();
+    appData.connectionStatus = ConnectionStatus.registro;
+  }
+
+  @override
+  void dispose() {
+    _ipController.removeListener(_onTextFieldChanged);
+    _ipController.dispose();
+    super.dispose();
   }
 }

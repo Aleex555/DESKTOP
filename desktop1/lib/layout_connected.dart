@@ -18,6 +18,8 @@ class _LayoutConnectedState extends State<LayoutConnected> {
   bool showMessages = false;
   List<Map<String, dynamic>> messages = [];
 
+  bool _isSending = false;
+
   @override
   Widget build(BuildContext context) {
     AppData appData = Provider.of<AppData>(context, listen: false);
@@ -52,6 +54,7 @@ class _LayoutConnectedState extends State<LayoutConnected> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
+                      onEditingComplete: _onEnviarPressed,
                     ),
                   ),
                 ),
@@ -67,40 +70,13 @@ class _LayoutConnectedState extends State<LayoutConnected> {
                 width: 140,
                 height: 32,
                 child: ElevatedButton(
-                  onPressed: () async {
-                    final message2 = {
-                      'fecha': DateFormat('HH:mm dd-MM-yyyy').format(dateTime),
-                      'mensaje': _messageController.text
-                    };
-
-                    Map<String, dynamic>? data =
-                        await appData.readFile("mensajes.json");
-                    data ??= {};
-
-                    bool messageExists = data.values.any((value) =>
-                        value is Map<String, dynamic> &&
-                        value.containsKey('mensaje') &&
-                        value['mensaje'] == _messageController.text);
-
-                    if (!messageExists) {
-                      int nextIndex = 1;
-                      while (data.containsKey('nuevoMensaje$nextIndex')) {
-                        nextIndex++;
-                      }
-                      data['nuevoMensaje$nextIndex'] = message2;
-                      await appData.saveFile("mensajes.json", data);
-                    } else {
-                      print("Mensaje NO guardado porque ya existe");
-                    }
-
-                    appData.broadcastMessage(_messageController.text);
-                    _messageController.text = "";
-                    FocusScope.of(context).requestFocus(_messageFocusNode);
-                  },
-                  child: const Text(
-                    "Enviar",
-                    style: TextStyle(fontSize: 14),
-                  ),
+                  onPressed: _isSending ? null : _onEnviarPressed,
+                  child: _isSending
+                      ? CircularProgressIndicator()
+                      : const Text(
+                          "Enviar",
+                          style: TextStyle(fontSize: 14),
+                        ),
                 ),
               ),
               const SizedBox(width: 8),
@@ -234,6 +210,50 @@ class _LayoutConnectedState extends State<LayoutConnected> {
         ],
       ),
     );
+  }
+
+  void _onEnviarPressed() async {
+    AppData appData = Provider.of<AppData>(context, listen: false);
+    if (_isSending) return;
+
+    setState(() {
+      _isSending = true;
+    });
+
+    final message2 = {
+      'fecha': DateFormat('HH:mm dd-MM-yyyy').format(dateTime),
+      'mensaje': _messageController.text
+    };
+
+    Map<String, dynamic>? data = await appData.readFile("mensajes.json");
+    data ??= {};
+
+    bool messageExists = data.values.any((value) =>
+        value is Map<String, dynamic> &&
+        value.containsKey('mensaje') &&
+        value['mensaje'] == _messageController.text);
+
+    if (!messageExists) {
+      int nextIndex = 1;
+      while (data.containsKey('nuevoMensaje$nextIndex')) {
+        nextIndex++;
+      }
+      data['nuevoMensaje$nextIndex'] = message2;
+      await appData.saveFile("mensajes.json", data);
+    } else {
+      print("Mensaje NO guardado porque ya existe");
+    }
+
+    appData.broadcastMessage(_messageController.text);
+    _messageController.text = "";
+    FocusScope.of(context).requestFocus(_messageFocusNode);
+
+    // Mostrar pantalla de carga durante 2 segundos
+    await Future.delayed(Duration(seconds: 2));
+
+    setState(() {
+      _isSending = false;
+    });
   }
 
   void loadMessages() async {

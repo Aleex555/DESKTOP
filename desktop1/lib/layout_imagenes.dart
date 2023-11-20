@@ -75,11 +75,11 @@ class _ImageLayoutState extends State<ImageLayout> {
                 onTap: () async {
                   bool confirm = await _showConfirmationDialog(context);
                   if (confirm) {
-                    await _showLoadingScreen(context);
                     File imageFile = File(images[index].path);
                     List<int> imageBytes = await imageFile.readAsBytes();
                     String base64Image = base64Encode(imageBytes);
                     appData.reenviar_img(base64Image);
+                    await _showLoadingScreen(context);
                   }
                 },
                 child: Container(
@@ -146,7 +146,7 @@ class _ImageLayoutState extends State<ImageLayout> {
       },
     );
 
-    await Future.delayed(Duration(seconds: 5));
+    await Future.delayed(Duration(seconds: 4));
 
     Navigator.of(context).pop();
   }
