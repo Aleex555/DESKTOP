@@ -132,7 +132,7 @@ class AppData with ChangeNotifier {
 
   volver_connected() {
     final message = {
-      'type': 'registro',
+      'type': 'connected',
     };
     _socketClient!.sink.add(jsonEncode(message));
   }
@@ -186,10 +186,8 @@ class AppData with ChangeNotifier {
       throw Exception('No se seleccionó ninguna imagen.');
     }
 
-    // Convierte la imagen a bytes
     List<int> bytes = await pickedFile.readAsBytes();
 
-    // Codifica los bytes en Base64
     String base64String = base64Encode(bytes);
     final String destinationImagePath =
         './galeria_img/' + pickedFile.path.split('/').last;

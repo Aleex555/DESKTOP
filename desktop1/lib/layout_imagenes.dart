@@ -50,10 +50,8 @@ class _ImageLayoutState extends State<ImageLayout> {
   }
 
   Widget _buildImageListView() {
-    // Directorio que contiene las imágenes
     Directory galleryDir = Directory('galeria_img');
 
-    // Listamos los archivos en el directorio
     List<FileSystemEntity> images = galleryDir.listSync();
 
     return ListView.builder(
