@@ -26,6 +26,7 @@ class _LayoutConnectedState extends State<LayoutConnected> {
       appBar: AppBar(
         title: Text('Display Crazy'),
         backgroundColor: Colors.blue,
+        centerTitle: true,
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -178,6 +179,7 @@ class _LayoutConnectedState extends State<LayoutConnected> {
                         appData.pickImage();
                       } else if (value == 'tomar_foto') {
                         appData.galeria_img();
+                        appData.createGalleryFolder();
                       }
                     },
                     itemBuilder: (BuildContext context) => [

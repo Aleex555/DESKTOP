@@ -178,7 +178,16 @@ class AppData with ChangeNotifier {
     }
   }
 
+  createGalleryFolder() async {
+    final directory = Directory('./galeria_img');
+
+    if (!(await directory.exists())) {
+      await directory.create(recursive: true);
+    }
+  }
+
   pickImage() async {
+    await createGalleryFolder();
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
