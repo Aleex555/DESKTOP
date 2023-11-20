@@ -19,6 +19,7 @@ class _LayoutRegistroState extends State<LayoutRegistro> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Registro"),
+        backgroundColor: Colors.blue,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
