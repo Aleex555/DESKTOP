@@ -44,6 +44,7 @@ class _LayoutDisconnectedState extends State<LayoutDisconnected> {
       appBar: AppBar(
         title: const Text("Display Crazy"),
         backgroundColor: Colors.blue,
+        centerTitle: true,
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
