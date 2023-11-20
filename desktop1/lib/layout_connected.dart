@@ -195,7 +195,6 @@ class _LayoutConnectedState extends State<LayoutConnected> {
                         appData.broadcastMessage(messages[index]['mensaje']);
                         _messageController.text = "";
                         FocusScope.of(context).requestFocus(_messageFocusNode);
-                        print("Elemento clicado: ");
                       });
                     },
                     child: ListTile(
@@ -240,15 +239,12 @@ class _LayoutConnectedState extends State<LayoutConnected> {
       }
       data['nuevoMensaje$nextIndex'] = message2;
       await appData.saveFile("mensajes.json", data);
-    } else {
-      print("Mensaje NO guardado porque ya existe");
     }
 
     appData.broadcastMessage(_messageController.text);
     _messageController.text = "";
     FocusScope.of(context).requestFocus(_messageFocusNode);
 
-    // Mostrar pantalla de carga durante 2 segundos
     await Future.delayed(Duration(seconds: 2));
 
     setState(() {
