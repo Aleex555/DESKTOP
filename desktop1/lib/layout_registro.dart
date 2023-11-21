@@ -15,6 +15,8 @@ class _LayoutRegistroState extends State<LayoutRegistro> {
 
   @override
   Widget build(BuildContext context) {
+    AppData appData = Provider.of<AppData>(context);
+    appData.ccontext = context;
     return Scaffold(
       appBar: AppBar(
         title: Text("Registro"),
@@ -83,5 +85,7 @@ class _LayoutRegistroState extends State<LayoutRegistro> {
     String contrasena = _contrasenaController.text;
     AppData appData = Provider.of<AppData>(context, listen: false);
     appData.registro(usuario, contrasena);
+    _usuarioController.text = "";
+    _contrasenaController.text = "";
   }
 }

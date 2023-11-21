@@ -22,13 +22,23 @@ class _LayoutConnectedState extends State<LayoutConnected> {
 
   @override
   Widget build(BuildContext context) {
-    AppData appData = Provider.of<AppData>(context, listen: false);
+    AppData appData = Provider.of<AppData>(context);
+    appData.ccontext = context;
 
     return Scaffold(
       appBar: AppBar(
         title: Text('Display Crazy'),
         backgroundColor: Colors.blue,
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.person),
+            iconSize: 45,
+            onPressed: () {
+              print('Botón del AppBar presionado');
+            },
+          ),
+        ],
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -284,8 +294,8 @@ class _LayoutConnectedState extends State<LayoutConnected> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Confirmación'),
-          content: SingleChildScrollView(
+          title: const Text('Confirmación'),
+          content: const SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
                 Text('¿Estás seguro de que quieres realizar esta acción?'),
@@ -297,7 +307,7 @@ class _LayoutConnectedState extends State<LayoutConnected> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Cancelar'),
+              child: const Text('Cancelar'),
             ),
             TextButton(
               onPressed: () {

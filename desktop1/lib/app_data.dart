@@ -16,10 +16,10 @@ class AppData with ChangeNotifier {
 
   String? mySocketId;
   List<String> clients = [];
-  bool regitrado = false;
 
   bool file_saving = false;
   bool file_loading = false;
+  BuildContext? ccontext;
 
   AppData() {
     _getLocalIpAddress();
@@ -52,6 +52,12 @@ class AppData with ChangeNotifier {
         final data = jsonDecode(message);
 
         switch (data['type']) {
+          case 'no':
+            const snackBar = SnackBar(
+              content: Text("Credenciales incorrectas."),
+              duration: Duration(seconds: 2),
+            );
+            ScaffoldMessenger.of(ccontext!).showSnackBar(snackBar);
           case 'ok':
             connectionStatus = ConnectionStatus.connected;
           case 'img':
@@ -78,6 +84,7 @@ class AppData with ChangeNotifier {
         mySocketId = "";
         clients = [];
         notifyListeners();
+        print("hola");
       },
       onDone: () {
         connectionStatus = ConnectionStatus.disconnected;
@@ -118,6 +125,7 @@ class AppData with ChangeNotifier {
       'type': 'registro',
       'user': usu,
       'password': contra,
+      'from': 'Desktop'
     };
     _socketClient!.sink.add(jsonEncode(message));
   }
@@ -191,7 +199,12 @@ class AppData with ChangeNotifier {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile == null) {
-      throw Exception('No se seleccionó ninguna imagen.');
+      const snackBar = SnackBar(
+        content: Text("No se ha seleccionado ninguna imagen."),
+        duration: Duration(seconds: 2),
+      );
+      ScaffoldMessenger.of(ccontext!).showSnackBar(snackBar);
+      return;
     }
 
     List<int> bytes = await pickedFile.readAsBytes();
