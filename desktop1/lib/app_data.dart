@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_interpolation_to_compose_strings
+
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -20,6 +22,7 @@ class AppData with ChangeNotifier {
   bool file_saving = false;
   bool file_loading = false;
   BuildContext? ccontext;
+  String? usuario;
 
   AppData() {
     _getLocalIpAddress();
@@ -52,25 +55,47 @@ class AppData with ChangeNotifier {
         final data = jsonDecode(message);
 
         switch (data['type']) {
+          case 'infomensaje':
+            if (mySocketId != data['id']) {
+              String mensaje =
+                  "El usuario ${data['usuario']} desde ${data['from']} ha enviado un mensaje.";
+              final snackBar = SnackBar(
+                content: Text(mensaje),
+                duration: Duration(seconds: 3),
+              );
+              ScaffoldMessenger.of(ccontext!).showSnackBar(snackBar);
+            }
+            break;
           case 'no':
             const snackBar = SnackBar(
               content: Text("Credenciales incorrectas."),
               duration: Duration(seconds: 2),
             );
             ScaffoldMessenger.of(ccontext!).showSnackBar(snackBar);
+            break;
           case 'ok':
             connectionStatus = ConnectionStatus.connected;
+            break;
           case 'img':
             connectionStatus = ConnectionStatus.imagenes;
+            break;
           case 'list':
-            clients = (data['list'] as List).map((e) => e.toString()).toList();
-            clients.remove(mySocketId);
+            print(data['list']);
             break;
           case 'id':
             mySocketId = data['value'];
             break;
           case 'connected':
-            clients.add(data['id']);
+            if (mySocketId != data['id']) {
+              String mensaje =
+                  "El usuario ${data['usuario']} se ha conectado desde ${data['from']} .";
+              final snackBar = SnackBar(
+                content: Text(mensaje),
+                duration: Duration(seconds: 3),
+              );
+              ScaffoldMessenger.of(ccontext!).showSnackBar(snackBar);
+            }
+
             break;
           case 'disconnected':
             clients.remove(data['id']);
@@ -104,7 +129,7 @@ class AppData with ChangeNotifier {
     _socketClient!.sink.close();
   }
 
-  refreshClientsList() {
+  clientsList() {
     final message = {
       'type': 'list',
     };
@@ -115,6 +140,7 @@ class AppData with ChangeNotifier {
     final message = {
       'type': 'broadcast',
       'from': 'Flutter',
+      'usuario': usuario,
       'value': msg,
     };
     _socketClient!.sink.add(jsonEncode(message));
@@ -159,6 +185,18 @@ class AppData with ChangeNotifier {
       file_saving = false;
       notifyListeners();
     }
+  }
+
+  Map<String, String> stringToMap(String mapString) {
+    List<String> keyValuePairs =
+        mapString.replaceAll('{', '').replaceAll('}', '').split(', ');
+    Map<String, String> resultMap = {};
+    for (String pair in keyValuePairs) {
+      List<String> parts = pair.split('=');
+      resultMap[parts[0]] = parts[1];
+    }
+
+    return resultMap;
   }
 
   Future<Map<String, dynamic>?> readFile(String fileName) async {

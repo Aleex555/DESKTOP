@@ -35,6 +35,7 @@ class _LayoutConnectedState extends State<LayoutConnected> {
             icon: Icon(Icons.person),
             iconSize: 45,
             onPressed: () {
+              appData.clientsList();
               print('Botón del AppBar presionado');
             },
           ),

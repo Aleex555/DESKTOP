@@ -84,6 +84,7 @@ class _LayoutRegistroState extends State<LayoutRegistro> {
     String usuario = _usuarioController.text;
     String contrasena = _contrasenaController.text;
     AppData appData = Provider.of<AppData>(context, listen: false);
+    appData.usuario = _usuarioController.text;
     appData.registro(usuario, contrasena);
     _usuarioController.text = "";
     _contrasenaController.text = "";
