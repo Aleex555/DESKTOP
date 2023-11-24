@@ -61,7 +61,7 @@ class AppData with ChangeNotifier {
                   "El usuario ${data['usuario']} desde ${data['from']} ha enviado un mensaje.";
               final snackBar = SnackBar(
                 content: Text(mensaje),
-                duration: Duration(seconds: 3),
+                duration: Duration(seconds: 2),
               );
               ScaffoldMessenger.of(ccontext!).showSnackBar(snackBar);
             }
@@ -80,18 +80,28 @@ class AppData with ChangeNotifier {
             connectionStatus = ConnectionStatus.imagenes;
             break;
           case 'list':
-            print(data['list']);
+            showHashMapDialog(ccontext!, data['list']);
             break;
           case 'id':
             mySocketId = data['value'];
             break;
+          case 'disconnected':
+            if (mySocketId != data['id']) {
+              String mensaje =
+                  "El usuario ${data['usuario']} de ${data['from']} se ha desconectado. Conexiones: ${data['conexiones']}";
+              final snackBar = SnackBar(
+                content: Text(mensaje),
+                duration: Duration(seconds: 2),
+              );
+              ScaffoldMessenger.of(ccontext!).showSnackBar(snackBar);
+            }
           case 'connected':
             if (mySocketId != data['id']) {
               String mensaje =
-                  "El usuario ${data['usuario']} se ha conectado desde ${data['from']} .";
+                  "El usuario ${data['usuario']} se ha conectado desde ${data['from']}. Conexiones: ${data['conexiones']}";
               final snackBar = SnackBar(
                 content: Text(mensaje),
-                duration: Duration(seconds: 3),
+                duration: Duration(seconds: 2),
               );
               ScaffoldMessenger.of(ccontext!).showSnackBar(snackBar);
             }
@@ -116,6 +126,41 @@ class AppData with ChangeNotifier {
         mySocketId = "";
         clients = [];
         notifyListeners();
+      },
+    );
+  }
+
+  void showHashMapDialog(BuildContext context, Map<String, dynamic> hashMap) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Clientes conectados:'),
+          content: Container(
+            width: double.maxFinite,
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                for (var entry in hashMap.entries)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Text(
+                      'Usuario: ${entry.key} -> Plataforma: ${entry.value}',
+                      style: TextStyle(fontSize: 16.0),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cerrar'),
+            ),
+          ],
+        );
       },
     );
   }
