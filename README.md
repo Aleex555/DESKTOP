@@ -8,11 +8,9 @@
   ```bash
   git clone https://github.com/Aleex555/DESKTOP.git
 - After download, you will need o clean and compile for you device:
- ```bash
+  ```bash
   flutter clean
- ```bash
   flutter pub get
- ```bash
   flutter run
 ## Usage:
 
