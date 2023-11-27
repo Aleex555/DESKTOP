@@ -15,3 +15,7 @@
 ## Usage:
 
 - Make sure that you have the server version with the same local Wifi connection.
+
+## Video:
+
+- https://youtu.be/puqE1X0jsUY?si=ioeKr7yQmcQTsElG
