@@ -40,183 +40,193 @@ class _LayoutConnectedState extends State<LayoutConnected> {
           ),
         ],
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const SizedBox(height: 52),
-          Expanded(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Container(
-                    child: TextField(
-                      controller: _messageController,
-                      focusNode: _messageFocusNode,
-                      decoration: InputDecoration(
-                        hintText: "Escribe tu mensaje ...",
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        filled: true,
-                        fillColor: const Color.fromRGBO(240, 240, 240, 1),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
+      body: Padding(
+        padding: const EdgeInsets.only(bottom: 39),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            const SizedBox(height: 52),
+            Expanded(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Container(
+                      child: TextField(
+                        controller: _messageController,
+                        focusNode: _messageFocusNode,
+                        decoration: InputDecoration(
+                          hintText: "Escribe tu mensaje ...",
+                          contentPadding:
+                              EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          filled: true,
+                          fillColor: const Color.fromRGBO(240, 240, 240, 1),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                         ),
+                        onEditingComplete: _onEnviarPressed,
                       ),
-                      onEditingComplete: _onEnviarPressed,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 140,
+                  height: 32,
+                  child: ElevatedButton(
+                    onPressed: _isSending ? null : _onEnviarPressed,
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      backgroundColor: Colors.blue,
+                    ),
+                    child: _isSending
+                        ? CircularProgressIndicator()
+                        : const Text(
+                            "Enviar",
+                            style: TextStyle(fontSize: 14, color: Colors.white),
+                          ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                SizedBox(
+                  width: 140,
+                  height: 32,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      appData.disconnectFromServer();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      backgroundColor: Colors.red,
+                    ),
+                    child: const Text(
+                      "Disconnect",
+                      style: TextStyle(fontSize: 14, color: Colors.white),
                     ),
                   ),
                 ),
                 const SizedBox(width: 8),
+                SizedBox(
+                  width: 140,
+                  height: 32,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        showMessages = !showMessages;
+                        if (showMessages) {
+                          loadMessages();
+                        }
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      backgroundColor: Colors.blue,
+                    ),
+                    child: const Text(
+                      "Mostrar Mensajes",
+                      style: TextStyle(fontSize: 14, color: Colors.white),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                SizedBox(
+                  width: 140,
+                  height: 32,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      _showConfirmationDialog(() {
+                        setState(() {
+                          loadMessages();
+                        });
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      backgroundColor: Colors.blue,
+                    ),
+                    child: const Text(
+                      "Refresh",
+                      style: TextStyle(fontSize: 14, color: Colors.white),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                SizedBox(
+                  width: 140,
+                  height: 32,
+                  child: ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      backgroundColor: Colors.blue,
+                    ),
+                    child: PopupMenuButton<String>(
+                      onSelected: (value) {
+                        if (value == 'seleccionar_galeria') {
+                          appData.pickImage();
+                        } else if (value == 'tomar_foto') {
+                          appData.galeria_img();
+                          appData.createGalleryFolder();
+                        }
+                      },
+                      itemBuilder: (BuildContext context) => [
+                        const PopupMenuItem<String>(
+                          value: 'seleccionar_galeria',
+                          child: ListTile(
+                            leading: Icon(Icons.photo),
+                            title: Text('Seleccionar de la galería'),
+                          ),
+                        ),
+                        const PopupMenuItem<String>(
+                          value: 'tomar_foto',
+                          child: ListTile(
+                            leading: Icon(Icons.camera),
+                            title: Text('Galeria'),
+                          ),
+                        ),
+                      ],
+                      child: const Text(
+                        "Imágenes",
+                        style: TextStyle(fontSize: 14, color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(
-                width: 140,
-                height: 32,
-                child: ElevatedButton(
-                  onPressed: _isSending ? null : _onEnviarPressed,
-                  child: _isSending
-                      ? CircularProgressIndicator()
-                      : const Text(
-                          "Enviar",
-                          style: TextStyle(fontSize: 14),
-                        ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              SizedBox(
-                width: 140,
-                height: 32,
-                child: ElevatedButton(
-                  onPressed: () {
-                    appData.disconnectFromServer();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.zero,
-                  ),
-                  child: const Text(
-                    "Disconnect",
-                    style: TextStyle(fontSize: 14),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              SizedBox(
-                width: 140,
-                height: 32,
-                child: ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      showMessages = !showMessages;
-                      if (showMessages) {
-                        loadMessages();
-                      }
-                    });
-                  },
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.zero,
-                  ),
-                  child: const Text(
-                    "Mostrar Mensajes",
-                    style: TextStyle(fontSize: 14),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              SizedBox(
-                width: 140,
-                height: 32,
-                child: ElevatedButton(
-                  onPressed: () {
-                    _showConfirmationDialog(() {
-                      setState(() {
-                        loadMessages();
-                      });
-                    });
-                  },
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.zero,
-                  ),
-                  child: const Text(
-                    "Refresh",
-                    style: TextStyle(fontSize: 14),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              // Botón Imágenes con Menú Emergente
-              SizedBox(
-                width: 140,
-                height: 32,
-                child: ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.zero,
-                  ),
-                  child: PopupMenuButton<String>(
-                    onSelected: (value) {
-                      if (value == 'seleccionar_galeria') {
-                        appData.pickImage();
-                      } else if (value == 'tomar_foto') {
-                        appData.galeria_img();
-                        appData.createGalleryFolder();
-                      }
-                    },
-                    itemBuilder: (BuildContext context) => [
-                      const PopupMenuItem<String>(
-                        value: 'seleccionar_galeria',
-                        child: ListTile(
-                          leading: Icon(Icons.photo),
-                          title: Text('Seleccionar de la galería'),
-                        ),
+            if (showMessages)
+              Expanded(
+                child: ListView.builder(
+                  itemCount: messages.length,
+                  itemBuilder: (context, index) {
+                    return GestureDetector(
+                      onTap: () {
+                        _showConfirmationDialog(() {
+                          appData.broadcastMessage(messages[index]['mensaje']);
+                          _messageController.text = "";
+                          FocusScope.of(context)
+                              .requestFocus(_messageFocusNode);
+                        });
+                      },
+                      child: ListTile(
+                        title: Text(messages[index]['mensaje']),
+                        subtitle: Text(messages[index]['fecha']),
                       ),
-                      const PopupMenuItem<String>(
-                        value: 'tomar_foto',
-                        child: ListTile(
-                          leading: Icon(Icons.camera),
-                          title: Text('Galeria'),
-                        ),
-                      ),
-                    ],
-                    child: const Text(
-                      "Imágenes",
-                      style: TextStyle(fontSize: 14),
-                    ),
-                  ),
+                    );
+                  },
                 ),
               ),
-              // ... (Otros botones)
-            ],
-          ),
-          if (showMessages)
-            Expanded(
-              child: ListView.builder(
-                itemCount: messages.length,
-                itemBuilder: (context, index) {
-                  return GestureDetector(
-                    onTap: () {
-                      _showConfirmationDialog(() {
-                        appData.broadcastMessage(messages[index]['mensaje']);
-                        _messageController.text = "";
-                        FocusScope.of(context).requestFocus(_messageFocusNode);
-                      });
-                    },
-                    child: ListTile(
-                      title: Text(messages[index]['mensaje']),
-                      subtitle: Text(messages[index]['fecha']),
-                    ),
-                  );
-                },
-              ),
-            ),
-          const SizedBox(height: 8),
-        ],
+            const SizedBox(height: 8),
+          ],
+        ),
       ),
     );
   }

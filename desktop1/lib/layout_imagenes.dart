@@ -14,13 +14,12 @@ class ImageLayout extends StatefulWidget {
 
 class _ImageLayoutState extends State<ImageLayout> {
   late AppData appData;
-  late List<bool> isMouseOverList; // Lista de estados para cada imagen
+  late List<bool> isMouseOverList;
 
   @override
   void initState() {
     super.initState();
-    isMouseOverList = List.generate(
-        10, (index) => false); // Ajusta el tamaño según tu cantidad de imágenes
+    isMouseOverList = List.generate(10, (index) => false);
   }
 
   @override
@@ -30,6 +29,7 @@ class _ImageLayoutState extends State<ImageLayout> {
       appBar: AppBar(
         title: const Text("Enviar Imágenes"),
         backgroundColor: Colors.blue,
+        centerTitle: true,
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -47,7 +47,14 @@ class _ImageLayoutState extends State<ImageLayout> {
             onPressed: () {
               appData.volver_connected();
             },
-            child: Text('Volver'),
+            style: ElevatedButton.styleFrom(
+              padding: EdgeInsets.zero,
+              backgroundColor: Colors.blue,
+            ),
+            child: const Text(
+              'Volver',
+              style: TextStyle(fontSize: 25, color: Colors.white),
+            ),
           ),
         ),
       ),
@@ -133,7 +140,7 @@ class _ImageLayoutState extends State<ImageLayout> {
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        return AlertDialog(
+        return const AlertDialog(
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
